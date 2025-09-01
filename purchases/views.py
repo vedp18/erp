@@ -12,3 +12,6 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
     permission_classes = [IsGeneralManager | IsAdmin]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
