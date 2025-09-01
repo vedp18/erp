@@ -10,9 +10,10 @@ class SupplierSerializer(serializers.ModelSerializer):
         model = Supplier
         fields = '__all__'
 
+
 class PurchaseOrderItemSerializer(serializers.ModelSerializer):
     # Will return {id, name} for GET
-    item_data = serializers.SerializerMethodField(read_only=True)
+    item_details = serializers.SerializerMethodField(read_only=True)
 
     # Accepts dict for POST/PUT
     item = serializers.JSONField(write_only=True, required=True)
@@ -22,7 +23,7 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrderItem
         fields = [
-            'item_data',    # for GET
+            'item_details',    # for GET
             'item',         # for POST/PUT
             'quantity_ordered',
             'unit',         # for GET
@@ -31,10 +32,11 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['sub_total']
 
-    def get_item_data(self, obj):
+    def get_item_details(self, obj):
         return {
             "id": obj.item.id,
-            "name": obj.item.name
+            "name": obj.item.name,
+            "sku": obj.item.sku
         }
 
     def create(self, validated_data):
@@ -68,7 +70,9 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
                 except Item.DoesNotExist:
                     raise serializers.ValidationError({"item": "Item with this ID does not exist."})
             else:
-                item = Item.objects.create(**item_data)
+                item_serializer = ItemSerializer(data=item_data)
+                item_serializer.is_valid(raise_exception=True)
+                item = item_serializer.save()
 
             instance.item = item
 
@@ -76,23 +80,25 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
-    supplier = serializers.SerializerMethodField()
+    supplier_details = serializers.SerializerMethodField()
     supplier_id = serializers.PrimaryKeyRelatedField(
         queryset=Supplier.objects.all(), source='supplier', write_only=True, required=False
     )
-    supplier_name = serializers.CharField(write_only=True, required=False)
+    # supplier_name = serializers.CharField(write_only=True, required=False)
+    supplier = serializers.JSONField(write_only=True, required=False)
     order_items = PurchaseOrderItemSerializer(many=True)
 
     class Meta:
         model = PurchaseOrder
         fields = ['id', 
-                  'supplier',       # for GET method only
-                  'supplier_id',    # for POST/PUT with existing supplier
-                  'supplier_name',  # for POST/PUT with new supplier
-                  'created_by', 'created_on', 'status', 'order_items', 'total']
+                  'supplier_details',       # for GET method only
+                #   'supplier_id',    # for POST/PUT with existing supplier
+                #   'supplier_name',  # for POST/PUT with new supplier
+                  'supplier',  # for POST/PUT with new supplier
+                  'status', 'order_items', 'total', 'created_by', 'created_on']
         read_only_fields =  ['created_by', 'created_on', 'total']
 
-    def get_supplier(self, obj):
+    def get_supplier_details(self, obj):
         return {
             "id": obj.supplier.id,
             "name": obj.supplier.name
@@ -101,14 +107,32 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     # for post, put
     def create(self, validated_data):
         items_data = validated_data.pop('order_items')
-        supplier = validated_data.pop('supplier', None)  # already a Supplier object if supplier_id was sent
-        supplier_name = validated_data.pop('supplier_name', None)
+        # supplier = validated_data.pop('supplier', None)  # already a Supplier object if supplier_id was sent
+        # supplier_name = validated_data.pop('supplier_name', None)
+        supplier_data = validated_data.pop('supplier', None)
 
-        if supplier is None and supplier_name:
-            supplier = Supplier.objects.create(name=supplier_name)
+        # Case 1: Existing Supplier with ID
+        if "id" in supplier_data:
+            try:
+                supplier = Supplier.objects.get(id=supplier_data["id"])
+            except Supplier.DoesNotExist:
+                raise serializers.ValidationError({"supplier": "Supplier with this ID does not exist."})
 
-        if supplier is None:
-            raise serializers.ValidationError("Supplier info is required")
+        # Case 2: New Supplier creation
+        else:
+            # item = Item.objects.create(**item_data)
+            supplier_serializer = SupplierSerializer(data=supplier_data)
+            supplier_serializer.is_valid(raise_exception=True)
+            supplier = supplier_serializer.save()
+
+        #  # Attach item to purchase order item
+        # validated_data["supplier"] = supplier
+
+        # if supplier is None and supplier_name:
+        #     supplier = Supplier.objects.create(name=supplier_name)
+
+        # if supplier is None:
+        #     raise serializers.ValidationError("Supplier info is required")
 
         po = PurchaseOrder.objects.create(supplier=supplier, **validated_data)
 

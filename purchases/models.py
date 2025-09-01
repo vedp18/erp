@@ -1,22 +1,15 @@
 from django.db import models
-from django.core.validators import RegexValidator
 from django.conf import settings
-
+from helper import phone_number_regex
 from inventory.models import Item
 
 
-
-# helper regex
-phone_number_regex = RegexValidator(
-    regex=r'^\+?[1-9]\d{1,14}$',
-    message="Enter a valid international phone number format (up to 15 digits, e.g. +14155552671)."
-)
 # Supplier
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(
-        validators=[phone_number_regex],
+        validators=[phone_number_regex.phone_number_regex],
         max_length=16,
         unique=True
     )
@@ -78,7 +71,7 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderItem(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='order_items')
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity_ordered = models.PositiveIntegerField(default=1)
+    quantity_ordered = models.DecimalField(max_digits=10, decimal_places=2, default=1.0)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     sub_total = models.DecimalField(max_digits=20, decimal_places=2,default=0)
 
