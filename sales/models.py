@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from helper import phone_number_regex
+from helper_modules import phone_number_regex
 from inventory.models import Item
 
 class Customer(models.Model):
@@ -20,6 +20,7 @@ class SalesOrder(models.Model):
     STATUS_CHOICES = [
         ("draft", "Draft"),
         ("confirmed", "Confirmed"),
+        ("shipped", "Shipped"),
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
     ]
@@ -28,6 +29,7 @@ class SalesOrder(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    
 
     def __str__(self):
         return f"Sales Order: {self.id} - to Customer:{self.customer.name}"
@@ -39,15 +41,21 @@ class SalesOrder(models.Model):
         self.status = 'confirmed'
         self.save(update_fields=['status'])
 
-    def receive(self):
+    def ship(self):
         if self.status != 'confirmed':
-            raise ValueError("Only confirmed SOs can be delivered.")
+            raise ValueError("Only confirmes SOs can be shipped.")
+        self.status = 'shipped'
+        self.save(update_fields=['status'])
+
+    def deliver(self):
+        if self.status != 'shipped':
+            raise ValueError("Only shipped SOs can be delivered.")
         self.status = 'delivered'
         self.save(update_fields=['status'])
 
     def cancel(self):
-        if self.status == 'delivered':
-            raise ValueError("Delivered SOs cannot be cancelled.")
+        if self.status == 'delivered' or self.status == 'shipped':
+            raise ValueError("Delivered or Shipped SOs cannot be cancelled.")
         self.status = 'cancelled'
         self.save(update_fields=['status'])
     

@@ -111,7 +111,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         return sales_order
     
     def update(self, instance, validated_data):
-        items_data = validated_data.pop('order_items')
+        items_data = validated_data.pop('order_items', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -121,6 +121,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
 
             for item_data in items_data:
                 SalesOrderItem.objects.create(sales_order=instance, **item_data)
-            return instance
+        return instance
         
 

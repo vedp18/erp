@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            line-height: 24px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            border-collapse: collapse;
+        }
+
+        table td {
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        table th {
+            padding: 10px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-box">
+        <h2>Invoice #{{ invoice.id }}</h2>
+        <p><strong>Status:</strong> {{ invoice.get_status_display }}</p>
+        <p><strong>Issued on:</strong> {{ invoice.issued_on|date:"d M Y" }}</p>
+        <p><strong>Due date:</strong> {{ invoice.due_date|date:"d M Y" }}</p>
+
+        <hr>
+
+        <div class="section-title">Customer Details</div>
+        <p><strong>Name:</strong> {{ invoice.order_details.customer.name }}</p>
+        <p><strong>Email:</strong> {{ invoice.order_details.customer.email }}</p>
+        <p><strong>Phone:</strong> {{ invoice.order_details.customer.phone_number }}</p>
+
+        <div class="section-title">Order Details</div>
+        <p><strong>Sales Order:</strong> {{ invoice.order_details.id }}</p>
+        <p><strong>Description:</strong> {{ invoice.description }}</p>
+
+        <div class="section-title">Invoice Items</div>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for item in invoice.order_items.all %}
+            <tr>
+                <td>{{ item.item.name }}</td>
+                <td>{{ item.quantity_ordered }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.sub_total }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <hr>
+        <h2 class="total">Total: {{ invoice.total_amount }}</h2>
+    </div>
+</body>
+
+</html>

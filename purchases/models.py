@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from helper import phone_number_regex
+from helper_modules import phone_number_regex
 from inventory.models import Item
 
 
