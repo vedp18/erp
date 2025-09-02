@@ -104,7 +104,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             "name": obj.supplier.name
         }
 
-    # for post, put
+    # for post
     def create(self, validated_data):
         items_data = validated_data.pop('order_items')
         # supplier = validated_data.pop('supplier', None)  # already a Supplier object if supplier_id was sent

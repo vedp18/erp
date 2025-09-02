@@ -5,7 +5,7 @@ from inventory.models import Item
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
     phone_number = models.CharField(
         max_length=16,
         validators=[phone_number_regex.phone_number_regex],
