@@ -32,7 +32,6 @@ class PurchaseOrder(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    total = models.DecimalField(max_digits=20, decimal_places=2, default=0)
 
     def __str__(self):
         return f"PO-{self.id} - from supplier {self.supplier.name}"

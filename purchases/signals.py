@@ -14,14 +14,3 @@ def update_stock_on_receive_PO(sender, instance, **kwargs):
             item.save()
 
 
-@receiver([post_save, post_delete], sender=PurchaseOrder) 
-def update_purchase_order_total(sender, instance, **kwargs):
-    instance.update_sub_total()
-
-# @receiver([post_save, post_delete], sender=PurchaseOrderItem)
-# def update_purchase_order_total(sender, instance, **kwargs):
-#     purchase_order = instance.purchase_order
-#     purchase_order.total = purchase_order.order_items.aggregate(
-#         total=Sum('sub_total')
-#     )['total'] or 0
-#     purchase_order.save(update_fields=['total'])
