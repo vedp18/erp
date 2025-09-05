@@ -17,6 +17,7 @@ Includes **users, inventory, purchases, sales, invoices, and reports** with asyn
 * ✅ **Reports** (Daily/Monthly sales, purchase reports)
 * ✅ **Async Tasks** using **Celery + RabbitMQ + Redis**
 * ✅ **Monitoring** with **Flower & RabbitMQ Management UI**
+* ✅ **API Documentaion** with **drf_yasg - Yet Another Swagger Generator**
 
 ---
 
@@ -27,6 +28,7 @@ Includes **users, inventory, purchases, sales, invoices, and reports** with asyn
 * ⚡ **Async Queue:** Celery + RabbitMQ (broker) + Redis (cache/result backend)
 * 📨 **Emailing:** Django Email Backend + Celery Tasks
 * 📊 **Monitoring:** Flower, RabbitMQ Management UI
+* 📊 **API Documentation:** drf_yasg - Yet Another Swagger Generator
 
 ---
 ## 📧 Invoice Emailing
@@ -35,6 +37,14 @@ Whenever a **Sales Order is confirmed**, an **Invoice is automatically generated
 This uses:
 
 * Django Template (HTML → PDF)
+* Celery task for async emailing
+
+---
+## 📧 API Documentation
+
+Auto-generated API docs using drf_yasg - Yet Another Swagger Generator:
+
+* drf_yasg for auto-generated api doc at [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/) or [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc)
 * Celery task for async emailing
 
 ---
@@ -217,3 +227,4 @@ Visit 👉 [http://localhost:5555](http://localhost:5555)
   * Flower
 
 ---
+
