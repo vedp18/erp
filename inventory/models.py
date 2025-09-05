@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.conf import settings
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -19,7 +20,9 @@ class Item(models.Model):
     sku = models.CharField(max_length=100, unique=True)     # Stock Keeping Unit
     stock_available = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     unit = models.CharField(max_length=50, default="pcs")   # can be kg, mtr, according to item
+    profit_margin_percent = models.DecimalField(max_digits=20, decimal_places=2, default=settings.COMMON_PROFIT_MARGIN_PERCENT)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
+    purchase_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     description = models.TextField(blank=True, null=True)
     added_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -29,3 +32,4 @@ class Item(models.Model):
 
     def __str__(self):
         return f"Item: {self.name}, ({self.sku}) from category: {self.category}"
+    

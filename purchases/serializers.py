@@ -81,9 +81,6 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     supplier_details = serializers.SerializerMethodField()
-    supplier_id = serializers.PrimaryKeyRelatedField(
-        queryset=Supplier.objects.all(), source='supplier', write_only=True, required=False
-    )
     # supplier_name = serializers.CharField(write_only=True, required=False)
     supplier = serializers.JSONField(write_only=True, required=False)
     order_items = PurchaseOrderItemSerializer(many=True)
@@ -95,7 +92,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
                 #   'supplier_id',    # for POST/PUT with existing supplier
                 #   'supplier_name',  # for POST/PUT with new supplier
                   'supplier',  # for POST/PUT with new supplier
-                  'status', 'order_items', 'total', 'created_by', 'created_on']
+                  'status', 'order_items', 'created_by', 'created_on']
         read_only_fields =  ['created_by', 'created_on', 'total']
 
     def get_supplier_details(self, obj):

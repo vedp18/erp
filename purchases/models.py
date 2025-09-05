@@ -43,10 +43,10 @@ class PurchaseOrder(models.Model):
     #     self.total = sum(item.sub_total for item in self.order_items.all())
     #     super().save(update_fields='total')
 
-    def update_sub_total(self):
-        total = sum(item.sub_total for item in self.order_items.all())
-        self.total = total
-        self.save(update_fields=['total'])
+    # def update_sub_total(self):
+    #     total = sum(item.sub_total for item in self.order_items.all())
+    #     self.total = total
+    #     self.save(update_fields=['total'])
     
     # --- State transition methods ---
     def confirm(self):

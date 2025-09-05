@@ -1,0 +1,11 @@
+<html>
+
+<body>
+    <h3>Dear {{ customer.name }},</h3>
+    <p>Please find attached your invoice <b>#{{ invoice.id }}</b> for Sales Order <b>#{{ invoice.sales_order.id }}</b>.
+    </p>
+    <p>Total Amount: {{ invoice.total_amount }}</p>
+    <p>Thank you for your business!</p>
+</body>
+
+</html>

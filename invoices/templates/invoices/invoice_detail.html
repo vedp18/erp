@@ -80,6 +80,7 @@
             <tr>
                 <th>Item</th>
                 <th>Qty</th>
+                <th>Unit</th>
                 <th>Unit Price</th>
                 <th>Subtotal</th>
             </tr>
@@ -87,6 +88,7 @@
             <tr>
                 <td>{{ item.item.name }}</td>
                 <td>{{ item.quantity_ordered }}</td>
+                <td>{{ item.item.unit }}</td>
                 <td>{{ item.unit_price }}</td>
                 <td>{{ item.sub_total }}</td>
             </tr>

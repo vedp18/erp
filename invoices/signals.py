@@ -2,6 +2,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from sales.models import SalesOrder
 from .models import Invoice, InvoiceItem
+from .tasks import send_invoice_email
 
 @receiver(post_save, sender=SalesOrder)
 def create_invoices_for_sales_order(sender, instance, created, **kwargs):
@@ -26,6 +27,7 @@ def create_invoices_for_sales_order(sender, instance, created, **kwargs):
             print(f"total: {total}")
             invoice.total_amount = total
             invoice.save()
+            send_invoice_email.delay(invoice.id)
 
 
 @receiver(pre_delete, sender=SalesOrder)

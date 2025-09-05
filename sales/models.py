@@ -69,6 +69,9 @@ class SalesOrderItem(models.Model):
     sub_total = models.DecimalField(max_digits=20, decimal_places=2)
 
     def save(self, *args, **kwargs):
+        # Autofill default unit_price from Item  when  creating  new line
+        if not self.unit_price:
+            self.unit_price = self.item.unit_price
         self.sub_total = self.quantity_ordered * self.unit_price
         super().save(*args, **kwargs)
 

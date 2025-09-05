@@ -31,7 +31,7 @@ class SalesOrderItemSerializer(serializers.ModelSerializer):
             'unit',
             'unit_price', 'sub_total'
         ]
-        read_only_fields = ['id', 'sub_total']
+        read_only_fields = ['id', 'sub_total', ]
 
     def get_item_details(self, obj):
         return {
